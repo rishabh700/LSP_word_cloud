@@ -22,10 +22,10 @@ comments = comments_xl["Public Comment"].tolist()
 
 ###TOPICS - RISHABH###
 #Accessibility: Biking, walking, pedestrian, parking, car, transit, bus, ferry, train, NJ TRANSIT, light rail, shuttle
-#Amenities: Playground, play area, pool, courts, swim, fields, boad, kayak, play, sports
-#Ecology/Resilience: Wildlife, nature, contamination, chromium, cleanup, erosion, ecosystem, water, climate, wetland
+#Amenities: Bike share, garden, excercise, playground, play area, pool, courts, swim, fields, board, kayak, play, sports
+#Ecology/Resilience: Wildlife, nature, contamination, chromium, cleanup, erosion, ecosystem, water, climate, wetland, habitat, bird, insect.
 #Concepts: People's Park, Interior Habitats, afterthought
-#Type of development: privatisation, commercialization, community park, festivals, concerts, stadium, arena, sports venue, amphitheater
+#Type of development: privatisation, commercialization, community park, festivals, concerts, stadium, arena, sports venue, amphitheater, community, Caven Point
 
 #for loop: if comment contains accessibilty, then accessibility += 1, then compare counts
 
