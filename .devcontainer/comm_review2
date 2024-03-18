@@ -5,20 +5,41 @@ from collections import Counter
 from nltk.util import ngrams
 import string
 import pandas as pd
-
-# Download NLTK resources if not already downloaded
-#nltk.download('punkt')
-#nltk.download('stopwords')
-
+from textblob import TextBlob
+from openpyxl import load_workbook
 
 # List of comments
-#comments = ["I really enjoyed the product, it's great!", "The service was terrible, very disappointed.","The packaging was good, but the product itself was lacking.", "Overall, I'm satisfied with my purchase."]
 
-comments_xl = pd.read_excel("/workspaces/codespaces-jupyter/test_comments.xlsx")
-comments = comments_xl["Public Comment"].tolist()
+publiccomms_1 = pd.read_csv("/workspaces/codespaces-jupyter/comments_all/liberty-state-park-design-task-force-2024-03-12.csv")
+publiccomms_2 = pd.read_csv("/workspaces/codespaces-jupyter/comments_all/LSP - Design Task Force - Public Comments - March 2 to March 16.csv")
+publiccomms_3 = pd.read_csv("/workspaces/codespaces-jupyter/comments_all/LSP 875 Public Comments.csv")
+
+comments_xl = publiccomms_1.append(publiccomms_2, ignore_index=True)
+comments_xl['Name'] = comments_xl['Name (First)'] + ' ' + comments_xl['Name (Last)']
+comments_xl = comments_xl[['Name', 'Email Address', 'Public Comment']]
+
+publiccomms_3.rename(columns={'Comment': 'Public Comment'}, inplace=True)
+
+comments_xl = publiccomms_3.append(comments_xl, ignore_index=True)
 
 ###PULSE CHECK - LAUREN####
 
+positivewords = ['I support', 'in favor of', "I like"]
+negativewords = ['against', "oppose", "reject", "not agree", "bad", "afterthought", "doesn't cut it"]
+
+# Function to check if any word from the list is in the text
+def check_word(text):
+    for word in positivewords:
+        if word in text:
+            return "supportive"
+    for word in negativewords:
+        if word in text:
+            return "unsupportive"
+    return "neutral"
+
+comments_xl['emotion'] = comments_xl['Public Comment'].apply(check_word)
+summary = comments_xl.groupby('emotion')['Public Comment'].count()
+print(summary)
 
 ###TOPICS - RISHABH###
 #Accessibility: Biking, walking, pedestrian, parking, car, transit, bus, ferry, train, NJ TRANSIT, light rail, shuttle
@@ -30,6 +51,13 @@ comments = comments_xl["Public Comment"].tolist()
 #for loop: if comment contains accessibilty, then accessibility += 1, then compare counts
 
 ##maybe do the topics here?
+
+
+
+
+#COUNT WORDS
+
+comments = comments_xl["Public Comment"].tolist()
 
 # Function to preprocess text
 def preprocess_text(text):
