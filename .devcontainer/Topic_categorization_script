@@ -13,7 +13,7 @@ def highlight_text(cell, words):
 
 
 # User-specified input parameters
-input_file = "data/LSP 875 Public Comments for Revitalization Program from 33K petition signers of Protection Act.xls"  # Specify the input Excel file location
+input_file = "data/comments_all.csv"  # Specify the input Excel file location
 column_number = 3  # Specify the column number (1-indexed) with the Excel sheet
 num_topics = 5  # Specify the number of topics
 topic_words = [
@@ -24,11 +24,12 @@ topic_words = [
     ["development type", "People's Park", "Interior", "Habitats", "afterthought"]   # Specify words for Topic 5
 ]
 sheet_names = ["Accessibility", "Amenities", "Ecology_Resilience", "Concepts", "Type of development"]  # Specify the name for each topic's sheet in the output Excel file
-output_file = "data/Output_categorized_comments_2.xlsx"  # Specify the output Excel file name
+output_file = "data/Output_categorized_comments_all_1.xlsx"  # Specify the output Excel file name
 
 def split_table(input_file, column_number, topic_words, output_file, sheet_names):
     # Read Excel file into a pandas DataFrame
-    df = pd.read_excel(input_file)
+    df = pd.read_csv(input_file) # for reading csv
+    #df = pd.read_excel(input_file) # for reading excel
     
     # Create separate DataFrames for each topic
     topic_dfs = {topic: pd.DataFrame() for topic in range(1, len(topic_words)+1)}
