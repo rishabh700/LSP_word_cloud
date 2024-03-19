@@ -22,10 +22,14 @@ publiccomms_3.rename(columns={'Comment': 'Public Comment'}, inplace=True)
 
 comments_xl = publiccomms_3.append(comments_xl, ignore_index=True)
 
-###PULSE CHECK - LAUREN####
+comments_xl.to_csv('comments_all.csv', index = False)
 
-positivewords = ['I support', 'in favor of', "I like"]
-negativewords = ['against', "oppose", "reject", "not agree", "bad", "afterthought", "doesn't cut it"]
+###PULSE CHECK####
+
+positivewords = ['I support', 'in favor of', "I like", "excellent", "pleased"]
+negativewords = ['against', "oppos", "reject", "not agree",  "doesn't cut it", "take away", "given away", "concerned"
+                 "bad", "afterthought", "absurd", "terrible", "disappoint", "negativ", "object", "upset"
+                 ]
 
 # Function to check if any word from the list is in the text
 def check_word(text):
@@ -41,24 +45,28 @@ comments_xl['emotion'] = comments_xl['Public Comment'].apply(check_word)
 summary = comments_xl.groupby('emotion')['Public Comment'].count()
 print(summary)
 
-###TOPICS - RISHABH###
-#Accessibility: Biking, walking, pedestrian, parking, car, transit, bus, ferry, train, NJ TRANSIT, light rail, shuttle
-#Amenities: Playground, play area, pool, courts, swim, fields, boad, kayak, play, sports
-#Ecology/Resilience: Wildlife, nature, contamination, chromium, cleanup, erosion, ecosystem, water, climate, wetland
-#Concepts: People's Park, Interior Habitats, afterthought
-#Type of development: privatisation, commercialization, community park, festivals, concerts, stadium, arena, sports venue, amphitheater
-
-#for loop: if comment contains accessibilty, then accessibility += 1, then compare counts
-
-##maybe do the topics here?
-
-
-
-
 #COUNT WORDS
 
+#comments to lists
 comments = comments_xl["Public Comment"].tolist()
 
+comments_xl_pos = comments_xl[comments_xl['emotion'] == 'supportive']
+comments_pos = comments_xl_pos["Public Comment"]
+
+comments_xl_neg = comments_xl[comments_xl['emotion'] == 'unsupportive']
+comments_neg = comments_xl_neg["Public Comment"]
+
+comments_xl_neu = comments_xl[comments_xl['emotion'] == 'neutral']
+comments_neu = comments_xl_neu["Public Comment"]
+
+# prep words to remove
+
+#strings_to_remove = "liberty state park"
+#comments = [s.replace(strings_to_remove, '') for s in comments_xl]
+#comments_pos = [s.replace(strings_to_remove, '') for s in comments_xl_pos]
+#comments_neg = [s.replace(strings_to_remove, '') for s in comments_xl_neg]
+#comments_neu = [s.replace(strings_to_remove, '') for s in comments_xl_neu]
+   
 # Function to preprocess text
 def preprocess_text(text):
     # Tokenize the text
@@ -76,36 +84,101 @@ def preprocess_text(text):
 all_tokens = [preprocess_text(comment) for comment in comments]
 all_tokens_flat = [token for sublist in all_tokens for token in sublist]
 
+all_tokens_pos = [preprocess_text(comment) for comment in comments_pos]
+all_tokens_flat_pos = [token for sublist in all_tokens_pos for token in sublist]
 
+all_tokens_neg = [preprocess_text(comment) for comment in comments_neg]
+all_tokens_flat_neg = [token for sublist in all_tokens_neg for token in sublist]
+
+all_tokens_neu = [preprocess_text(comment) for comment in comments_neu]
+all_tokens_flat_neu = [token for sublist in all_tokens_neu for token in sublist]
 
 # Count occurrences of each token
 word_freq = Counter(all_tokens_flat)
+word_freq_pos = Counter(all_tokens_flat_pos)
+word_freq_neg = Counter(all_tokens_flat_neg)
+word_freq_neu = Counter(all_tokens_flat_neu)
 
 # Get the most common words and their frequencies
-top_n = 10
+top_n = 15
 top_words = word_freq.most_common(top_n)
+top_words_pos = word_freq_pos.most_common(top_n)
+top_words_neg = word_freq_neg.most_common(top_n)
+top_words_neu = word_freq_neu.most_common(top_n)
 
 # Display the top words
 print("Top", top_n, "most common words:")
 for word, freq in top_words:
     print(word, "-", freq)
 
+print("Top", top_n, "most common words in supportive comments:")
+for word, freq in top_words_pos:
+    print(word, "-", freq)
+
+print("Top", top_n, "most common words in unsupportive comments:")
+for word, freq in top_words_neg:
+    print(word, "-", freq)
+
+print("Top", top_n, "most common words in neutral/unassigned comments:")
+for word, freq in top_words_neu:
+    print(word, "-", freq)
+
 #ADD ADDITIONAL PHRASE LENGTHS
 # Extract and count n-grams (phrases)
 n = 2  # Change n to extract different n-grams, e.g., bigrams (n=2) or trigrams (n=3)
+q = 3
+
 phrases = []
 for comment_tokens in all_tokens:
     comment_phrases = list(ngrams(comment_tokens, n))
     phrases.extend(comment_phrases)
+    comment_phrases = list(ngrams(comment_tokens, q))
+    phrases.extend(comment_phrases)
+
+phrases_pos = []
+for comment_tokens in all_tokens_pos:
+    comment_phrases_pos = list(ngrams(comment_tokens, n))
+    phrases_pos.extend(comment_phrases_pos)
+    comment_phrases_pos = list(ngrams(comment_tokens, q))
+    phrases_pos.extend(comment_phrases_pos)
+
+phrases_neg = []
+for comment_tokens in all_tokens_neg:
+    comment_phrases_neg = list(ngrams(comment_tokens, n))
+    phrases_neg.extend(comment_phrases_neg)
+    comment_phrases_neg = list(ngrams(comment_tokens, q))
+    phrases_neg.extend(comment_phrases_neg)
+
+phrases_neu = []
+for comment_tokens in all_tokens_neu:
+    comment_phrases_neu = list(ngrams(comment_tokens, n))
+    phrases_neu.extend(comment_phrases_neu)
+    comment_phrases_neu = list(ngrams(comment_tokens, q))
+    phrases_neu.extend(comment_phrases_neu)
 
 # Count occurrences of each phrase
 phrase_freq = Counter(phrases)
+phrase_freq_pos = Counter(phrases_pos)
+phrase_freq_neg = Counter(phrases_neg)
+phrase_freq_neu = Counter(phrases_neu)
 
 # Get the most common phrases and their frequencies
-top_n_phrases = 10
+top_n_phrases = 15
 top_phrases = phrase_freq.most_common(top_n_phrases)
+top_phrases_pos = phrase_freq_pos.most_common(top_n_phrases)
+top_phrases_neg = phrase_freq_neg.most_common(top_n_phrases)
+top_phrases_neu = phrase_freq_neu.most_common(top_n_phrases)
 
 # Display the top phrases
 print("\nTop", top_n_phrases, "most common phrases ({}-grams):".format(n))
 for phrase, freq in top_phrases:
+    print(' '.join(phrase), "-", freq)
+print("\nTop", top_n_phrases, "most common phrases in supportive comments ({}-grams):".format(n))
+for phrase, freq in top_phrases_pos:
+    print(' '.join(phrase), "-", freq)
+print("\nTop", top_n_phrases, "most common phrases in unsupportive comments ({}-grams):".format(n))
+for phrase, freq in top_phrases_neg:
+    print(' '.join(phrase), "-", freq)
+print("\nTop", top_n_phrases, "most common phrases in neutral/unassigned comments ({}-grams):".format(n))
+for phrase, freq in top_phrases_neu:
     print(' '.join(phrase), "-", freq)
