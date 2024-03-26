@@ -16,16 +16,15 @@ def highlight_text(cell, words):
 # User-specified input parameters
 input_file = "data/comments_all.csv"  # Specify the input Excel file location
 column_number = 3  # Specify the column number (1-indexed) with the Excel sheet
-num_topics = 5  # Specify the number of topics
+num_topics = 4  # Specify the number of topics
 topic_words = [
     ["Accessibility", "biking", "walking", "pedestrian", "parking", "car", "transit", "bus", "ferry", "train", "nj transit", "light rail", "shuttle"],  # Specify words for Topic 1
     ["Amenities", "bike share", "garden", "excercise", "playground", "play area", "pool", "courts", "swim", "fields", "boad", "kayak", "play", "sports", "golf"],  # Specify words for Topic 2
-    ["Ecology", "Resilience", "wildlife", "nature", "contamination", "chromium", "cleanup", "erosion", "ecosystem", "water", "climate", "wetland", "habitat", "bird", "insect"],  # Specify words for Topic 3
-    ["privatisation", "commercialization", "community park", "festivals", "concerts", "stadium", "arena", "sports venue", "amphitheater", "community", "Caven Point"],  # Specify words for Topic 4
-    ["development", "People's Park", "Interior", "Habitats", "protect","protected", "public"]   # Specify words for Topic 5
+    ["Ecology", "Resilience", "Caven Point", "wildlife", "nature", "contamination", "chromium", "cleanup", "erosion", "ecosystem", "water", "climate", "wetland", "habitat", "bird", "insect",  "Interior", "Habitats", "festivals", "concerts", "stadium", "arena", "sports venue", "amphitheater" ],  # Specify words for Topic 3
+    ["development", "People's Park", "protect","preserve", "protected", "public", "privatisation", "private", "commercial", "commercialization", "community park", "community", "corporation", "corporate", "develop"]   # Specify words for Topic 4
 ]
-sheet_names = ["Accessibility", "Amenities", "Ecology_Resilience", "Concepts", "Type of development"]  # Specify the name for each topic's sheet in the output Excel file
-output_file = "data/Output_categorized_comments_all_2.xlsx"  # Specify the output Excel file name
+sheet_names = ["Accessibility", "Amenities", "Ecology_Resilience", "Type of development"]  # Specify the name for each topic's sheet in the output Excel file
+output_file = "data/Output_topic_categorized_comments_all.xlsx"  # Specify the output Excel file name
 
 def split_table(input_file, column_number, topic_words, output_file, sheet_names):
     # Read CSV file into a pandas DataFrame
