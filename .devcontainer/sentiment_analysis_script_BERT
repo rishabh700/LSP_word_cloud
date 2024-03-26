@@ -1,0 +1,51 @@
+import pandas as pd
+import torch
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
+
+# Load the pre-trained DistilBERT model and tokenizer
+model_name = "distilbert-base-uncased"
+tokenizer = DistilBertTokenizer.from_pretrained(model_name)
+model = DistilBertForSequenceClassification.from_pretrained(model_name)
+model.eval()
+
+# User-specified input parameters
+input_file = "data/comments_all.csv" #Enter the path to the input CSV file
+input_column = 2 #enter the input column number (starting from 0)
+
+# Load the CSV file into a pandas DataFrame
+try:
+    df = pd.read_csv(input_file)
+except FileNotFoundError:
+    print("File not found. Please check the file path and try again.")
+    exit()
+
+# Define a function to get the sentiment using DistilBERT
+def get_sentiment(text):
+    inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
+    with torch.no_grad():
+        outputs = model(**inputs)
+        logits = outputs.logits
+    probabilities = torch.softmax(logits, dim=1).tolist()[0]
+    sentiment = "Positive" if probabilities[1] > probabilities[0] else "Negative"
+    return sentiment
+
+# Apply the sentiment analysis function to the specified column and create a new column with sentiment
+try:
+    df['Sentiment'] = df.iloc[:, input_column].apply(get_sentiment)
+except IndexError:
+    print("Column number out of range. Please check the input column number and try again.")
+    exit()
+
+# Calculate the count of each sentiment category
+sentiment_counts = df['Sentiment'].value_counts().reset_index()
+sentiment_counts.columns = ['Sentiment', 'Count']
+
+# Output the DataFrame with sentiment analysis results to an Excel file with a summary table
+output_file = 'sentiment_analysis_results.xlsx'
+with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
+    # Write the DataFrame with sentiment analysis results to the first sheet
+    df.to_excel(writer, sheet_name='Data', index=False)
+    # Write the summary table to the second sheet
+    sentiment_counts.to_excel(writer, sheet_name='Summary', index=False)
+
+print(f"Sentiment analysis results saved to '{output_file}'")
