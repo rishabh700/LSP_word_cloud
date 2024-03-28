@@ -1,8 +1,13 @@
 import pandas as pd
+import xlsxwriter
 from textblob import TextBlob
+from textblob.classifiers import NaiveBayesClassifier
+
+
+###POLARITY ANALYSIS###
 
 # User-specified input parameters
-input_file = "data/comments_all.csv" #Enter the path to the input CSV file
+input_file = "/workspaces/codespaces-jupyter/.devcontainer/comments_all.csv" #Enter the path to the input CSV file
 input_column = 2 #enter the input column number (starting from 0)
 
 # Load the CSV file into a pandas DataFrame
@@ -47,3 +52,32 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
     df.to_excel(writer, sheet_name='Data', index=False)
 
 print(f"Sentiment analysis results with summary table saved to '{output_file}'")
+
+
+##CLASSIFIERS WITH TRAINING###
+
+#classifications: supportive, cautious, dissatisfied
+
+train = [
+    ('I love Liberty State Park', 'supportive'),
+    ('This is an amazing place!', 'supportive'),
+    ('We must protect the land', 'cautious'),
+    ('Protect my park', 'cautious'),
+    ("I can't deal with this", 'dissatisfied'),
+    ("Keep developers and billionaires out", 'dissatisfied'),
+    ("We don't need a golf course", 'dissatisfied')
+]
+
+cl = NaiveBayesClassifier(train)
+
+
+
+#make the above a function
+#test
+
+#comments = comments_xl["Public Comment"].tolist()
+
+#blob = TextBlob("The beer is good. But the hangover is horrible.", classifier=cl)
+#for s in blob.sentences:
+ #   print(s)
+  #  print(s.classify())
