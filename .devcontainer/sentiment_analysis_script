@@ -1,0 +1,49 @@
+import pandas as pd
+from textblob import TextBlob
+
+# User-specified input parameters
+input_file = "data/comments_all.csv" #Enter the path to the input CSV file
+input_column = 2 #enter the input column number (starting from 0)
+
+# Load the CSV file into a pandas DataFrame
+try:
+    df = pd.read_csv(input_file)
+except FileNotFoundError:
+    print("File not found. Please check the file path and try again.")
+    exit()
+
+# Define a function to categorize sentiment polarity
+def categorize_sentiment(polarity):
+    if polarity > 0.2:
+        return 'Positive'
+    elif polarity < -0.2:
+        return 'Negative'
+    else:
+        return 'Neutral'
+
+# Define a function to get the sentiment polarity using TextBlob
+def get_sentiment(text):
+    analysis = TextBlob(str(text))
+    return analysis.sentiment.polarity
+
+# Apply the sentiment analysis function to the specified column and create a new column with sentiment polarity
+try:
+    df['Sentiment_Polarity'] = df.iloc[:, input_column].apply(get_sentiment)
+except IndexError:
+    print("Column number out of range. Please check the input column number and try again.")
+    exit()
+
+# Apply the categorize_sentiment function to create a new column with sentiment categories
+df['Sentiment_Category'] = df['Sentiment_Polarity'].apply(categorize_sentiment)
+
+# Calculate summary statistics for sentiment categories
+summary_table = df.groupby('Sentiment_Category').size().reset_index(name='Count')
+summary_table['Percentage'] = summary_table['Count'] / len(df) * 100
+
+# Output the DataFrame with sentiment analysis results to an Excel file with a summary table at the first sheet
+output_file = 'sentiment_analysis_results.xlsx'
+with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
+    summary_table.to_excel(writer, sheet_name='Summary', index=False)
+    df.to_excel(writer, sheet_name='Data', index=False)
+
+print(f"Sentiment analysis results with summary table saved to '{output_file}'")

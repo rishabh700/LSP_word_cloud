@@ -1,0 +1,69 @@
+#import packages
+import pandas as pd
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+import string
+
+#download stopwords
+import nltk
+#nltk.download('stopwords')
+#nltk.download('punkt')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
+def normalize_text(text, exclude_words):
+    # Convert text to lowercase
+    text = text.lower()
+    
+    # Remove punctuation
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    
+    # Tokenize the text
+    tokens = word_tokenize(text)
+    
+    # Remove stopwords and excluded words
+    stop_words = set(stopwords.words('english'))
+    filtered_tokens = [word for word in tokens if word not in stop_words and word not in exclude_words]
+    
+    # Join tokens back into a single string
+    normalized_text = ' '.join(filtered_tokens)
+    
+    return normalized_text
+
+def generate_word_cloud(input_file, sheet_name, column_number, output_image, exclude_words=[]):
+    # Read Excel file into a pandas DataFrame
+    df = pd.read_excel(input_file, sheet_name=sheet_name)
+    
+    # Extract text from the specified column and normalize it
+    normalized_text = ' '.join(df.iloc[:, column_number - 1].astype(str).apply(normalize_text, exclude_words=exclude_words))
+    
+    # Generate word cloud
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(normalized_text)
+    
+    # Plot word cloud
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    #plt.title('Word Cloud')
+    plt.savefig(output_image)
+    plt.close()
+    
+    # Generate summary table
+    word_freq = pd.Series(normalized_text.split()).value_counts().reset_index()
+    word_freq.columns = ['Word', 'Frequency']
+    
+    return word_freq
+
+# Input parameters
+input_file = 'data/Output_topic_categorized_comments_all.xlsx'  # Specify the input Excel file name
+sheet_name = 'Accessibility'       # Specify the sheet name
+column_number = 3           # Specify the column number (1-indexed)
+output_image = 'data/wordcloud_Accessibility_2.png'  # Specify the output image file name
+exclude_words = ['park', 'state', 'liberty', 'would', 'jersey', 'city', 'lsp', 'need', 'area', 'people', 'plan']  # Specify the list of words to be excluded from the word cloud analysis
+
+# Generate word cloud and summary table
+word_freq = generate_word_cloud(input_file, sheet_name, column_number, output_image, exclude_words)
+print("Summary Table:")
+print(word_freq.head(10))
+
+print("Word cloud image saved as:", output_image)
