@@ -56,16 +56,24 @@ print(f"Sentiment analysis results with summary table saved to '{output_file}'")
 
 ##CLASSIFIERS WITH TRAINING###
 
-#classifications: supportive, cautious, dissatisfied
+#classifications: supportive, cautious, dissatisfied, neutral
 
 train = [
-    ('I love Liberty State Park', 'supportive'),
+    ('Yes!!', 'supportive'),
     ('This is an amazing place!', 'supportive'),
+
     ('We must protect the land', 'cautious'),
     ('Protect my park', 'cautious'),
+
     ("I can't deal with this", 'dissatisfied'),
     ("Keep developers and billionaires out", 'dissatisfied'),
-    ("We don't need a golf course", 'dissatisfied')
+    ("We don't need a golf course", 'dissatisfied'),
+    ("We don’t need more development", 'dissatisfied'),
+    #("no!", 'dissatisfied'),
+
+    #("I love Liberty State Park.", 'neutral'),
+    ("I run in LSP everyday.", 'neutral'),
+    ("I live here!", "neutral")
 ]
 
 cl = NaiveBayesClassifier(train)
@@ -80,4 +88,5 @@ cl = NaiveBayesClassifier(train)
 #blob = TextBlob("The beer is good. But the hangover is horrible.", classifier=cl)
 #for s in blob.sentences:
  #   print(s)
+  #  print("Sentiment:")
   #  print(s.classify())
